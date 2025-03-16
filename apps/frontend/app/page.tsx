@@ -1,0 +1,32 @@
+import Image from "next/image";
+import { Card } from "@repo/ui/card";
+import type { Metadata } from "next"
+
+async function fetchArtists() {
+    const res = await fetch("http://localhost:8000/api/artists", {
+        cache: "no-store"
+    });
+    return res.json();
+}
+
+export const metadata: Metadata = {
+  title: "Ritmix",
+  description: "One stop music environment"
+}
+
+export default async function Home() {
+    const artists = await fetchArtists();
+
+    return (
+        <div className="p-4">
+            <h1 className="text-3xl font-bold text-gray-800">Ritmix</h1>
+            <ul>
+                {artists.map((artist: { id: number; name: string }) => (
+                    <li key={artist.id} className="text-gray-600">
+                        {artist.name}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}

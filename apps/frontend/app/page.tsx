@@ -15,7 +15,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-    const artists = await fetchArtists();
+    // const artists = await fetchArtists();
+    const artists = [{ id: 1, name: 'Artist 1' }]; // Mock data
 
     return (
         <div className="p-4">

@@ -8,7 +8,7 @@ import type { Metadata } from "next"
 // }
 
 export const metadata: Metadata = {
-  title: "Ritmix",
+  title: "Ritmix.id",
   description: "One stop music environment"
 }
 

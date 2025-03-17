@@ -9,7 +9,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Ritmix.id",
-  description: "One stop music environment"
+  description: "One stop music environments"
 }
 
 export default async function Home() {

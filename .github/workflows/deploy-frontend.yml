@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/frontend/**'  # Only trigger when frontend has changed
+      - 'apps/frontend/**'  # Hanya trigger jika frontend berubah
   pull_request:
     branches:
       - main
@@ -16,8 +16,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout codes
+      # Checkout kode
       - uses: actions/checkout@v4
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
 
       # Setup pnpm
       - name: Setup pnpm
@@ -25,24 +32,26 @@ jobs:
         with:
           version: 10.6.4
 
-      # Instal Dependencies
+      # Install dependencies dengan cache
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # Build frontend with Turborepo
+      # Build frontend dengan Turborepo
       - name: Build Frontend
         run: pnpm turbo run build --filter=frontend
 
-      # Deploy to Vercel
+      # Deploy ke Vercel
       - name: Deploy to Vercel
         id: vercel-deploy
-        run: |
-          pnpm dlx vercel --cwd apps/frontend --token ${{ secrets.VERCEL_TOKEN }} ${{ github.event_name == 'push' && '--prod' || '' }}
+        continue-on-error: true
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          pnpm dlx vercel --cwd apps/frontend --token $VERCEL_TOKEN ${{ github.event_name == 'push' && '--prod' || '' }}
 
-      # Output URL deployment
+      # Output URL deployment jika tersedia
       - name: Output Deployment URL
-        if: steps.vercel-deploy.outputs.url
-        run: echo "Deployed to ${{ steps.vercel-deploy.outputs.url }}"
+        if: success() && steps.vercel-deploy.outputs.url
+        run: echo "🚀 Deployed to ${{ steps.vercel-deploy.outputs.url }}"

@@ -26,22 +26,26 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      # ✅ Instal PNPM secara manual (fix error)
+      # ✅ Install Corepack
+      - name: Install Corepack
+        run: sudo npm install -g corepack
+
+      # ✅ Install PNPM manually (fix error)
       - name: Install PNPM
         run: |
           corepack enable
           corepack prepare pnpm@10.6.4 --activate
           pnpm --version
 
-      # ✅ Instal Dependencies
+      # ✅ Install Dependencies
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # ✅ Build frontend dengan Turborepo
+      # ✅ Build frontend with Turborepo
       - name: Build Frontend
         run: pnpm turbo run build --filter=frontend
 
-      # ✅ Deploy ke Vercel
+      # ✅ Deploy to Vercel
       - name: Deploy to Vercel
         id: vercel-deploy
         run: |
@@ -50,7 +54,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # ✅ Output URL deployment
+      # ✅ Output deployment URL
       - name: Output Deployment URL
         if: steps.vercel-deploy.outputs.url
         run: echo "Deployed to ${{ steps.vercel-deploy.outputs.url }}"

@@ -37,7 +37,7 @@ jobs:
       - name: Deploy to Vercel
         id: vercel-deploy
         run: |
-          npx vercel --cwd apps/frontend --token ${{ secrets.VERCEL_TOKEN }} ${{ github.event_name == 'push' && '--prod' || '' }} --build-env PNPM=true 
+          pnpm dlx vercel --cwd apps/frontend --token ${{ secrets.VERCEL_TOKEN }} ${{ github.event_name == 'push' && '--prod' || '' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

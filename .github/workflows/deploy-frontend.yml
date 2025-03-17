@@ -19,16 +19,19 @@ jobs:
       # ✅ Checkout kode repository
       - uses: actions/checkout@v4
 
-      # ✅ Setup Node.js dan otomatis install PNPM
+      # ✅ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
 
-      # ✅ Instal PNPM (supaya ada di PATH)
+      # ✅ Instal PNPM secara manual (fix error)
       - name: Install PNPM
-        run: corepack enable && corepack prepare pnpm@10.6.4 --activate
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.6.4 --activate
+          pnpm --version
 
       # ✅ Instal Dependencies
       - name: Install Dependencies

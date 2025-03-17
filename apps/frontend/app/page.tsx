@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  const artists = [{ id: 1, name: 'Artist 1' }]; // Mock data
+  const artists = [{ id: 1, name: 'Artist one' }]; // Mock data
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold text-gray-800">Ritmix - One stop music</h1>

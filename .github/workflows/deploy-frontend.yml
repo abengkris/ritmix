@@ -1,0 +1,49 @@
+name: Deploy Frontend to Vercel
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/frontend/**'  # Only trigger when frontend has changed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/frontend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout codes
+      - uses: actions/checkout@v4
+
+      # Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.2
+
+      # Instal Dependencies
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Build frontend with Turborepo
+      - name: Build Frontend
+        run: pnpm turbo run build --filter=frontend
+
+      # Deploy to Vercel
+      - name: Deploy to Vercel
+        id: vercel-deploy
+        run: |
+          cd apps/frontend
+          npx vercel --token ${{ secrets.VERCEL_TOKEN }} ${{ github.event_name == 'push' && '--prod' || '' }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      # Output URL deployment
+      - name: Output Deployment URL
+        if: steps.vercel-deploy.outputs.url
+        run: echo "Deployed to ${{ steps.vercel-deploy.outputs.url }}"

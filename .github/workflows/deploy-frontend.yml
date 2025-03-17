@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/frontend/**'  # Hanya trigger jika frontend berubah
+      - 'apps/frontend/**'
   pull_request:
     branches:
       - main
@@ -16,42 +16,38 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout kode
+      # ✅ Checkout kode repository
       - uses: actions/checkout@v4
 
-      # Setup Node.js
+      # ✅ Setup Node.js dan otomatis install PNPM
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
 
-      # Setup pnpm
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.6.4
+      # ✅ Instal PNPM (supaya ada di PATH)
+      - name: Install PNPM
+        run: corepack enable && corepack prepare pnpm@10.6.4 --activate
 
-      # Install dependencies dengan cache
+      # ✅ Instal Dependencies
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # Build frontend dengan Turborepo
+      # ✅ Build frontend dengan Turborepo
       - name: Build Frontend
         run: pnpm turbo run build --filter=frontend
 
-      # Deploy ke Vercel
+      # ✅ Deploy ke Vercel
       - name: Deploy to Vercel
         id: vercel-deploy
-        continue-on-error: true
+        run: |
+          pnpm dlx vercel --cwd apps/frontend --token ${{ secrets.VERCEL_TOKEN }} ${{ github.event_name == 'push' && '--prod' || '' }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          pnpm dlx vercel --cwd apps/frontend --token $VERCEL_TOKEN ${{ github.event_name == 'push' && '--prod' || '' }}
 
-      # Output URL deployment jika tersedia
+      # ✅ Output URL deployment
       - name: Output Deployment URL
-        if: success() && steps.vercel-deploy.outputs.url
-        run: echo "🚀 Deployed to ${{ steps.vercel-deploy.outputs.url }}"
+        if: steps.vercel-deploy.outputs.url
+        run: echo "Deployed to ${{ steps.vercel-deploy.outputs.url }}"

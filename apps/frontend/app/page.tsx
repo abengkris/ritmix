@@ -1,13 +1,11 @@
-import Image from "next/image";
-import { Card } from "@repo/ui/card";
 import type { Metadata } from "next"
 
-async function fetchArtists() {
-    const res = await fetch("http://localhost:8000/api/artists", {
-        cache: "no-store"
-    });
-    return res.json();
-}
+// async function fetchArtists() {
+//     const res = await fetch("http://localhost:8000/api/artists", {
+//         cache: "no-store"
+//     });
+//     return res.json();
+// }
 
 export const metadata: Metadata = {
   title: "Ritmix",
@@ -27,4 +25,3 @@ export default async function Home() {
     </div>
   );
 }
-// Test pnpm
